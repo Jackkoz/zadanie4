@@ -2,6 +2,7 @@
 #define HOLDING_HH
 
 #include <stddef.h>
+#include <iostream>
 
 template <int A, int H, int E>
 class Company
@@ -219,6 +220,146 @@ public:
 				+ hunValue * company.hunNumber
 				+ excValue * company.excNumber) * size;
 	}
+
+	/*
+	 * Oczekujemy również, że zaimplementujesz następujące operatory.
+	 * Operatory dodawania i odejmowania na grupach firm: +, -, +=, -=. Dodawane i
+	 * odejmowane mogą być tylko grupy równoważnych firm. W wyniku takich działań
+	 * liczba firm w grupie wynikowej zachowuje się zgodnie z naturalnymi regułami tych
+	 * działań. Wartość pojedynczego przedsiębiorstwa w nowej grupie liczymy jako
+	 * średnią ważoną wartości firm z sumowanych grup, czyli przykładowo dla operacji
+	 * g0 = g1 - g2 wartość kantoru wyznacza się formułą:
+	 *
+	 * wartość kantoru w g0 := (liczba kantorów w g1 * wartość kantoru w g1 -
+	 *		liczba kantorów w g2 * wartość kantoru w g2) /
+	 *		liczba kantorów w g0
+	 */
+	Group<C>& operator+= (const Group<C>& rhs)
+	{
+		unsigned int new_size = size + rhs.get_size();
+		accValue = (size * accValue + rhs.get_size() * rhs.accValue) / new_size;
+		hunValue = (size * hunValue + rhs.get_size() * rhs.hunValue) / new_size;
+		excValue = (size * excValue + rhs.get_size() * rhs.excValue) / new_size;
+		size = new_size;
+
+		return *this;
+	}
+
+	Group<C>& operator-= (const Group<C>& rhs)
+	{
+		unsigned int new_size = max(size - rhs.get_size(), 0);
+		if (new_size == 0) {
+			accValue = 0;
+			hunValue = 0;
+			excValue = 0;
+		} else {
+			accValue = max((size * accValue - rhs.get_size() * rhs.accValue) / new_size, 0);
+			hunValue = max((size * hunValue - rhs.get_size() * rhs.hunValue) / new_size, 0);
+			excValue = max((size * excValue - rhs.get_size() * rhs.excValue) / new_size, 0);
+		}
+		size = new_size;
+
+		return *this;
+	}
+
+	Group<C> operator+ (const Group<C>& rhs) const
+	{
+		Group<C> new_group(this);
+		new_group += rhs;
+		return new_group;
+	}
+
+	Group<C> operator- (const Group<C>& rhs) const
+	{
+		Group<C> new_group(this);
+		new_group -= rhs;
+		return new_group;
+	}
+
+	/*
+	 * Operatory mnożenia i dzielenia grupy firm przez nieujemną liczbę całkowitą: *,
+	 * /, *=, /=. Operacje te modyfikują liczność grupy zgodnie z ich naturalnymi
+	 * regułami. Przy mnożeniu grupy przez n wartość pojedynczego przedsiębiorstwa
+	 * ulega zmniejszeniu n razy, a przy dzieleniu grupy przez n zwiększa się n razy.
+	 * Zawsze dzielimy całkowitoliczbowo i odrzucamy ewentualną resztę.
+	 */
+ 	Group<C>& operator*= (const int n)
+	{
+		size *= n;
+
+		if (n == 0)
+		{
+			accValue = 0;
+			hunValue = 0;
+			excValue = 0;
+		} else
+		{
+	 		accValue /= n;
+			hunValue /= n;
+			excValue /= n;
+		}
+
+		return *this;
+	}
+
+	Group<C>& operator/= (const int n)
+	{
+		if (n == 0)
+		{
+			size = 0;
+			accValue = 0;
+			hunValue = 0;
+			excValue = 0;
+		} else
+		{
+	 		size /= n;
+			accValue *= n;
+			hunValue *= n;
+			excValue *= n;
+		}
+
+		return *this;
+	}
+
+	Group<C> operator* (const int n)
+	{
+		Group<C> new_group(this);
+		new_group *= n;
+		return new_group;
+	}
+
+	Group<C> operator/ (const int n)
+	{
+		Group<C> new_group(this);
+		new_group /= n;
+		return new_group;
+	}
+
+	/*
+	 * Operatory porównywania grup firm: ==, !=, <, >, <=, >=. Pamiętaj, że w
+	 * krytycznych sytuacjach nie jest istotne, ile mamy biur rachunkowych. Liczy się
+	 * tylko liczba kantorów (czyli kasa) oraz sklepów myśliwskich (broń). Posiadanie
+	 * większej liczby przedsiębiorstw tych dwóch typów czyni nas silniejszymi od
+	 * przeciwnika. Porządek na grupach nie jest liniowy.
+	 */
+
+
+
 };
+
+/*
+ * Operator << wypisujący na strumień opis grupy.
+ */
+template<class C>
+std::ostream& operator<< (std::ostream& os, const Group<C>& rhs)
+{
+	os << "Company:" << std::endl;
+	os << "Size: " << rhs.get_size() << " Value: " << rhs.get_value() << std::endl;
+	os << "Accountancies: " << C::company.accNumber << " Value: " << rhs.get_acc_val() << std::endl;
+	os << "Hunting shops: " << C::company.hunNumber << " Value: " << rhs.get_hs_val() << std::endl;
+	os << "Exchange offices: " << C::excNumber << " Value: " << rhs.get_exo_val() << std::endl;
+
+	return os;
+}
 
 #endif
