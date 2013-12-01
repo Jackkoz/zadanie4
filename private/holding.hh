@@ -342,8 +342,44 @@ public:
 	 * większej liczby przedsiębiorstw tych dwóch typów czyni nas silniejszymi od
 	 * przeciwnika. Porządek na grupach nie jest liniowy.
 	 */
+	template<class D>
+	bool operator==(Group<D> rhs)
+	{
+		return get_size() * C::hunNumber == rhs.get_size() * D::hunNumber &&
+				get_size() * C::excNumber == rhs.get_size() * D::excNumber;
+	}
 
+	template<class D>
+	bool operator!=(Group<D> rhs)
+	{
+		return !(this == rhs);
+	}
 
+	template<class D>
+	bool operator<(Group<D> rhs)
+	{
+		return get_size() * C::hunNumber < rhs.get_size() * D::hunNumber &&
+				get_size() * C::excNumber < rhs.get_size() * D::excNumber;
+	}
+
+	template<class D>
+	bool operator>(Group<D> rhs)
+	{
+		return get_size() * C::hunNumber > rhs.get_size() * D::hunNumber &&
+				get_size() * C::excNumber > rhs.get_size() * D::excNumber;
+	}
+
+	template<class D>
+	bool operator<=(Group<D> rhs)
+	{
+		return this < rhs || this == rhs;
+	}
+
+	template<class D>
+	bool operator>=(Group<D> rhs)
+	{
+		return this > rhs || this == rhs;
+	}
 
 };
 
@@ -361,5 +397,46 @@ std::ostream& operator<< (std::ostream& os, const Group<C>& rhs)
 
 	return os;
 }
+
+// Bardzo liczymy również na to, że napiszesz następujące funkcje globalne.
+
+// template<class C>
+// Group<typename additive_expand_comp<C>::type> const
+// additive_expand_group(Group<C> const &s1);
+// Zwiększa o jeden liczbę przedsiębiorstw (wszystkich typów) wchodzących w skład
+// każdej firmy należącej do grupy s1, nie zmieniając wartości pojedynczego
+// przedsiębiorstwa.
+
+// template<class C>
+// Group<typename multiply_comp<C, 10>::type> const
+// multiplicative_expand_group(Group<C> const &s1);
+// Zwiększa dziesięciokrotnie liczbę przedsiębiorstw (wszystkich typów) wchodzących
+// w skład każdej firmy należącej do grupy s1, nie zmieniając wartości pojedynczego
+// przedsiębiorstwa.
+
+// template<class C>
+// Group<typename additive_rollup_comp<C>::type> const
+// additive_rollup_group(Group<C> const &s1);
+// Zmniejsza o jeden liczbę przedsiębiorstw (wszystkich typów) wchodzących w skład
+// każdej firmy należącej do grupy s1, nie zmieniając wartości pojedynczego
+// przedsiębiorstwa.
+
+// template<class C>
+// Group<typename split_comp<C, 10>::type> const
+// multiplicative_rollup_group(Group<C> const &s1);
+// Zmniejsza dziesięciokrotnie liczbę przedsiębiorstw (wszystkich typów)
+// wchodzących w skład każdej firmy należącej do grupy s1, nie zmieniając wartości
+// pojedynczego przedsiębiorstwa.
+
+template<class C1, class C2, class C3>
+bool
+solve_auction(Group<C1> const &g1, Group<C2> const &g2, Group<C3> const &g3)
+{
+	return (g1 > g2 && g1 > g3) || (g2 > g1 && g2 > g3) || (g3 > g1 && g3 > g2);
+}
+// Funkcja, która pomoże nam określać, czy możliwe jest wyłonienie zwycięzcy
+// przetargu (nie zawsze jest to możliwe) w przypadku, gdy startują w nim grupy g1,
+// g2 oraz g3. Zwycięzcą zostaje grupa, która jest największa w sensie porządku
+// zdefiniowanego na grupach.
 
 #endif
