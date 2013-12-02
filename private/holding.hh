@@ -4,13 +4,9 @@
 #include <stddef.h>
 #include <iostream>
 
-template <int A, int H, int E>
+template <unsigned int A, unsigned int H, unsigned int E>
 class Company
 {
-	static_assert(A >= 0, "Negative accountancy number.");
-	static_assert(H >= 0, "Negative hunting shops number.");
-	static_assert(E >= 0, "Negative exchange offices number.");
-
 public:
 	constexpr static unsigned int accNumber = A;
 	constexpr static unsigned int hunNumber = H;
@@ -31,8 +27,8 @@ struct add_comp
 public:
 	//TODO zakres (MAX_UINT) ??
 	typedef Company<C1::accNumber + C2::accNumber,
-					C1::hunNumber + C2::hunNumber,
-					C1::excNumber + C2::excNumber> type;
+			C1::hunNumber + C2::hunNumber,
+			C1::excNumber + C2::excNumber> type;
 };
 
 /*
@@ -76,7 +72,9 @@ template<class C, unsigned int n>
 struct split_comp
 {
 public:
-	typedef Company<n >= 1 ? C::accNumber / n : 0, n >= 1 ? C::hunNumber / n : 0, n >= 1 ? C::excNumber / n : 0> type;
+	typedef Company<n >= 1 ? C::accNumber / n : 0, 
+			n >= 1 ? C::hunNumber / n : 0, 
+			n >= 1 ? C::excNumber / n : 0> type;
 
 };
 
@@ -100,10 +98,6 @@ public:
 template<class C>
 struct additive_rollup_comp
 {
-	static_assert(C::accNumber > 0, "Negative accountancy number.");
-	static_assert(C::hunNumber > 0, "Negative hunting shops number.");
-	static_assert(C::excNumber > 0, "Negative exchange offices number.");
-
 public:
 	typedef Company<C::accNumber >= 1 ? C::accNumber - 1 : 0,
 					C::hunNumber >= 1 ? C::hunNumber - 1 : 0,
@@ -115,6 +109,10 @@ template<class C>
 class Group
 {
 private:
+	static const unsigned int DEFAULT_ACC_VAL = 15;
+	static const unsigned int DEFAULT_HUN_VAL = 150;
+	static const unsigned int DEFAULT_EXC_VAL = 50;
+
 	unsigned int size;
 
 	unsigned int accValue;
@@ -135,23 +133,14 @@ public:
 
 
 	/*
-	 * Konstruktor wywołany bez parametrów tworzy grupę składającą się tylko z
-	 * jednej firmy.
-	 */
-	Group() :
-		Group(1)
-	{
-	}
-
-	/*
 	 * Konstruktor wywołany z jednym parametrem tworzy grupę składającą się
 	 * dokładnie z k firm o identycznej strukturze.
 	 */
-	Group(unsigned int k) :
+	Group(unsigned int k = 1) :
 		size(k),
-		accValue(15),
-		hunValue(150),
-		excValue(50)
+		accValue(DEFAULT_ACC_VAL),
+		hunValue(DEFAULT_HUN_VAL),
+		excValue(DEFAULT_EXC_VAL)
 	{
 	}
 
@@ -253,6 +242,7 @@ public:
 			hunValue = 0;
 			excValue = 0;
 		} else {
+			// po co max - unsigned int. Zrobic to inaczej...
 			accValue = max((size * accValue - rhs.get_size() * rhs.accValue) / new_size, 0);
 			hunValue = max((size * hunValue - rhs.get_size() * rhs.hunValue) / new_size, 0);
 			excValue = max((size * excValue - rhs.get_size() * rhs.excValue) / new_size, 0);
@@ -346,7 +336,7 @@ public:
 	bool operator==(Group<D> rhs)
 	{
 		return get_size() * C::hunNumber == rhs.get_size() * D::hunNumber &&
-				get_size() * C::excNumber == rhs.get_size() * D::excNumber;
+			   get_size() * C::excNumber == rhs.get_size() * D::excNumber;
 	}
 
 	template<class D>
@@ -358,6 +348,7 @@ public:
 	template<class D>
 	bool operator<(Group<D> rhs)
 	{
+		// <=
 		return get_size() * C::hunNumber < rhs.get_size() * D::hunNumber &&
 				get_size() * C::excNumber < rhs.get_size() * D::excNumber;
 	}
@@ -372,6 +363,7 @@ public:
 	template<class D>
 	bool operator<=(Group<D> rhs)
 	{
+		// zdefiniowac i uzyc do pozostalych
 		return this < rhs || this == rhs;
 	}
 
