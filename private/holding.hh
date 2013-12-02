@@ -225,10 +225,10 @@ public:
      */
     Group<C>& operator+= (const Group<C>& rhs)
     {
-        unsigned int new_size = size + rhs.get_size();
-        accValue = (size * accValue + rhs.get_size() * rhs.accValue) / new_size;
-        hunValue = (size * hunValue + rhs.get_size() * rhs.hunValue) / new_size;
-        excValue = (size * excValue + rhs.get_size() * rhs.excValue) / new_size;
+        unsigned int new_size = size + rhs.size;
+        accValue = (size * accValue + rhs.size * rhs.accValue) / new_size;
+        hunValue = (size * hunValue + rhs.size * rhs.hunValue) / new_size;
+        excValue = (size * excValue + rhs.size * rhs.excValue) / new_size;
         size = new_size;
 
         return *this;
@@ -236,16 +236,26 @@ public:
 
     Group<C>& operator-= (const Group<C>& rhs)
     {
-        unsigned int new_size = max(size - rhs.get_size(), 0);
+        unsigned int new_size = size > rhs.size ? size - rhs.size : 0);
         if (new_size == 0) {
             accValue = 0;
             hunValue = 0;
             excValue = 0;
         } else {
-            // po co max - unsigned int. Zrobic to inaczej...
-            accValue = max((size * accValue - rhs.get_size() * rhs.accValue) / new_size, 0);
-            hunValue = max((size * hunValue - rhs.get_size() * rhs.hunValue) / new_size, 0);
-            excValue = max((size * excValue - rhs.get_size() * rhs.excValue) / new_size, 0);
+            unsigned int lhs_acc_worth = size * accValue;
+            unsigned int rhs_acc_worth = rhs.size * rhs.accValue;
+            accValue = lhs_acc_worth > rhs_acc_worth ?
+                      (lhs_acc_worth - rhs_acc_worth) / new_size : 0;
+
+            unsigned int lhs_hun_worth = size * hun_worth;
+            unsigned int rhs_hun_worth = rhs.size * rhs.hunValue;
+            hunValue = lhs_hun_worth > rhs_hun_worth ?
+                      (lhs_hun_worth - rhs_hun_worth) / new_size : 0;
+
+            unsigned int lhs_exc_worth = size * excValue;
+            unsigned int rhs_exc_worth = rhs.size * exc.accValue;
+            excValue = lhs_exc_worth > rhs_exc_worth ?
+                      (lhs_exc_worth - rhs_exc_worth) / new_size : 0;
         }
         size = new_size;
 
@@ -311,14 +321,14 @@ public:
         return *this;
     }
 
-    Group<C> operator* (const int n)
+    Group<C> operator* (const int n) const
     {
         Group<C> new_group(this);
         new_group *= n;
         return new_group;
     }
 
-    Group<C> operator/ (const int n)
+    Group<C> operator/ (const int n) const
     {
         Group<C> new_group(this);
         new_group /= n;
@@ -333,44 +343,42 @@ public:
      * przeciwnika. Porządek na grupach nie jest liniowy.
      */
     template<class D>
-    bool operator==(Group<D> rhs)
+    bool operator==(Group<D>& rhs) const
     {
         return get_size() * C::hunNumber == rhs.get_size() * D::hunNumber &&
                get_size() * C::excNumber == rhs.get_size() * D::excNumber;
     }
 
     template<class D>
-    bool operator!=(Group<D> rhs)
+    bool operator!=(Group<D>& rhs) const
     {
         return !(this == rhs);
     }
 
     template<class D>
-    bool operator<(Group<D> rhs)
+    bool operator<=(Group<D>& rhs) const
     {
-        // <=
-        return get_size() * C::hunNumber < rhs.get_size() * D::hunNumber &&
-               get_size() * C::excNumber < rhs.get_size() * D::excNumber;
+        return get_size() * C::hunNumber <= rhs.get_size() * D::hunNumber &&
+               get_size() * C::excNumber <= rhs.get_size() * D::excNumber;
     }
 
     template<class D>
-    bool operator>(Group<D> rhs)
+    bool operator>=(Group<D>& rhs) const
     {
-        return get_size() * C::hunNumber > rhs.get_size() * D::hunNumber &&
-               get_size() * C::excNumber > rhs.get_size() * D::excNumber;
+        return get_size() * C::hunNumber >= rhs.get_size() * D::hunNumber &&
+               get_size() * C::excNumber >= rhs.get_size() * D::excNumber;
     }
 
     template<class D>
-    bool operator<=(Group<D> rhs)
+    bool operator<(Group<D>& rhs) const
     {
-        // zdefiniowac i uzyc do pozostalych
-        return this < rhs || this == rhs;
+        return this <= rhs && this != rhs;
     }
 
     template<class D>
-    bool operator>=(Group<D> rhs)
+    bool operator>(Group<D>& rhs) const
     {
-        return this > rhs || this == rhs;
+        return this >= rhs && this != rhs;
     }
 
 };
