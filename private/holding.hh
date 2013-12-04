@@ -400,30 +400,42 @@ std::ostream& operator<< (std::ostream& os, const Group<C>& rhs)
 
 // Bardzo liczymy również na to, że napiszesz następujące funkcje globalne.
 
-// template<class C>
-// Group<typename additive_expand_comp<C>::type> const
-// additive_expand_group(Group<C> const &s1);
+template<class C>
+Group<typename additive_expand_comp<C>::type> const
+additive_expand_group(Group<C> const &s1);
+{
+    return Group<typename additive_expand_comp<C>::type>(s1);
+}
 // Zwiększa o jeden liczbę przedsiębiorstw (wszystkich typów) wchodzących w skład
 // każdej firmy należącej do grupy s1, nie zmieniając wartości pojedynczego
 // przedsiębiorstwa.
 
-// template<class C>
-// Group<typename multiply_comp<C, 10>::type> const
-// multiplicative_expand_group(Group<C> const &s1);
+template<class C>
+Group<typename multiply_comp<C, 10>::type> const
+multiplicative_expand_group(Group<C> const &s1);
+{
+    return Group<typename multiply_comp<C, 10>::type>(s1);
+}
 // Zwiększa dziesięciokrotnie liczbę przedsiębiorstw (wszystkich typów) wchodzących
 // w skład każdej firmy należącej do grupy s1, nie zmieniając wartości pojedynczego
 // przedsiębiorstwa.
 
-// template<class C>
-// Group<typename additive_rollup_comp<C>::type> const
-// additive_rollup_group(Group<C> const &s1);
+template<class C>
+Group<typename additive_rollup_comp<C>::type> const
+additive_rollup_group(Group<C> const &s1);
+{
+    return Group<typename additive_rollup_comp<C>::type>(s1);
+}
 // Zmniejsza o jeden liczbę przedsiębiorstw (wszystkich typów) wchodzących w skład
 // każdej firmy należącej do grupy s1, nie zmieniając wartości pojedynczego
 // przedsiębiorstwa.
 
-// template<class C>
-// Group<typename split_comp<C, 10>::type> const
-// multiplicative_rollup_group(Group<C> const &s1);
+template<class C>
+Group<typename split_comp<C, 10>::type> const
+multiplicative_rollup_group(Group<C> const &s1)
+{
+    return Group<typename split_comp<C, 10>::type>(s1);
+}
 // Zmniejsza dziesięciokrotnie liczbę przedsiębiorstw (wszystkich typów)
 // wchodzących w skład każdej firmy należącej do grupy s1, nie zmieniając wartości
 // pojedynczego przedsiębiorstwa.
