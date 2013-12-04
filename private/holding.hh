@@ -4,12 +4,12 @@
 #include <stddef.h>
 #include <iostream>
 
-constexpr inline unsigned int subtract(unsigned int A, unsigned int B)
+static constexpr inline unsigned int subtract(unsigned int A, unsigned int B)
 {
     return (A > B) ? A - B : 0;
 }
 
-constexpr inline unsigned int divide(unsigned int A, unsigned int B)
+static constexpr inline unsigned int divide(unsigned int A, unsigned int B)
 {
     return (B > 0) ? A / B : 0;
 }
