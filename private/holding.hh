@@ -236,7 +236,7 @@ public:
 
     Group<C>& operator-= (const Group<C>& rhs)
     {
-        unsigned int new_size = size > rhs.size ? size - rhs.size : 0);
+        unsigned int new_size = size > rhs.size ? size - rhs.size : 0;
         if (new_size == 0) {
             accValue = 0;
             hunValue = 0;
@@ -247,33 +247,19 @@ public:
             accValue = lhs_acc_worth > rhs_acc_worth ?
                       (lhs_acc_worth - rhs_acc_worth) / new_size : 0;
 
-            unsigned int lhs_hun_worth = size * hun_worth;
+            unsigned int lhs_hun_worth = size * lhs_hun_worth;
             unsigned int rhs_hun_worth = rhs.size * rhs.hunValue;
             hunValue = lhs_hun_worth > rhs_hun_worth ?
                       (lhs_hun_worth - rhs_hun_worth) / new_size : 0;
 
             unsigned int lhs_exc_worth = size * excValue;
-            unsigned int rhs_exc_worth = rhs.size * exc.accValue;
+            unsigned int rhs_exc_worth = rhs.size * rhs.excValue;
             excValue = lhs_exc_worth > rhs_exc_worth ?
                       (lhs_exc_worth - rhs_exc_worth) / new_size : 0;
         }
         size = new_size;
 
         return *this;
-    }
-
-    Group<C> operator+ (const Group<C>& rhs) const
-    {
-        Group<C> new_group(this);
-        new_group += rhs;
-        return new_group;
-    }
-
-    Group<C> operator- (const Group<C>& rhs) const
-    {
-        Group<C> new_group(this);
-        new_group -= rhs;
-        return new_group;
     }
 
     /*
@@ -321,20 +307,6 @@ public:
         return *this;
     }
 
-    Group<C> operator* (const int n) const
-    {
-        Group<C> new_group(this);
-        new_group *= n;
-        return new_group;
-    }
-
-    Group<C> operator/ (const int n) const
-    {
-        Group<C> new_group(this);
-        new_group /= n;
-        return new_group;
-    }
-
     /*
      * Operatory porównywania grup firm: ==, !=, <, >, <=, >=. Pamiętaj, że w
      * krytycznych sytuacjach nie jest istotne, ile mamy biur rachunkowych. Liczy się
@@ -342,57 +314,89 @@ public:
      * większej liczby przedsiębiorstw tych dwóch typów czyni nas silniejszymi od
      * przeciwnika. Porządek na grupach nie jest liniowy.
      */
-    template<class D>
-    bool operator==(Group<D>& rhs) const
-    {
-        return get_size() * C::hunNumber == rhs.get_size() * D::hunNumber &&
-               get_size() * C::excNumber == rhs.get_size() * D::excNumber;
-    }
-
-    template<class D>
-    bool operator!=(Group<D>& rhs) const
-    {
-        return !(this == rhs);
-    }
-
-    template<class D>
-    bool operator<=(Group<D>& rhs) const
-    {
-        return get_size() * C::hunNumber <= rhs.get_size() * D::hunNumber &&
-               get_size() * C::excNumber <= rhs.get_size() * D::excNumber;
-    }
-
-    template<class D>
-    bool operator>=(Group<D>& rhs) const
-    {
-        return get_size() * C::hunNumber >= rhs.get_size() * D::hunNumber &&
-               get_size() * C::excNumber >= rhs.get_size() * D::excNumber;
-    }
-
-    template<class D>
-    bool operator<(Group<D>& rhs) const
-    {
-        return this <= rhs && this != rhs;
-    }
-
-    template<class D>
-    bool operator>(Group<D>& rhs) const
-    {
-        return this >= rhs && this != rhs;
-    }
 
 };
 
-/*
- * Operator << wypisujący na strumień opis grupy.
- */
+//***Non-member function overloads***
+
+template<class C>
+Group<C> operator+ (const Group<C>& lhs, const Group<C>& rhs)
+{
+    Group<C> new_group(lhs);
+    new_group += rhs;
+    return new_group;
+}
+
+template<class C>
+Group<C> operator- (const Group<C>& lhs, const Group<C>& rhs)
+{
+    Group<C> new_group(lhs);
+    new_group -= rhs;
+    return new_group;
+}
+
+template<class C>
+Group<C> operator* (const Group<C>& lhs, const int n)
+{
+    Group<C> new_group(lhs);
+    new_group *= n;
+    return new_group;
+}
+
+template<class C>
+Group<C> operator/ (const Group<C>& lhs, const int n)
+{
+    Group<C> new_group(lhs);
+    new_group /= n;
+    return new_group;
+}
+
+template<class C, class D>
+bool operator==(const Group<C>& lhs, const Group<D>& rhs)
+{
+    return lhs.get_size() * C::hunNumber == rhs.get_size() * D::hunNumber &&
+           lhs.get_size() * C::excNumber == rhs.get_size() * D::excNumber;
+}
+
+template<class C, class D>
+bool operator!=(const Group<C>& lhs, const Group<D>& rhs)
+{
+    return !(lhs == rhs);
+}
+
+template<class C, class D>
+bool operator<=(const Group<C>& lhs, const Group<D>& rhs)
+{
+    return lhs.get_size() * C::hunNumber <= rhs.get_size() * D::hunNumber &&
+           lhs.get_size() * C::excNumber <= rhs.get_size() * D::excNumber;
+}
+
+template<class C, class D>
+bool operator>=(const Group<C>& lhs, const Group<D>& rhs)
+{
+    return lhs.get_size() * C::hunNumber >= rhs.get_size() * D::hunNumber &&
+           lhs.get_size() * C::excNumber >= rhs.get_size() * D::excNumber;
+}
+
+template<class C, class D>
+bool operator<(const Group<C>& lhs, const Group<D>& rhs)
+{
+    return lhs <= rhs && lhs != rhs;
+}
+
+template<class C, class D>
+bool operator>(const Group<C>& lhs, const Group<D>& rhs)
+{
+    return lhs >= rhs && lhs != rhs;
+}
+
 template<class C>
 std::ostream& operator<< (std::ostream& os, const Group<C>& rhs)
 {
     os << "Company:" << std::endl;
     os << "Size: " << rhs.get_size() << " Value: " << rhs.get_value() << std::endl;
-    os << "Accountancies: " << C::company.accNumber << " Value: " << rhs.get_acc_val() << std::endl;
-    os << "Hunting shops: " << C::company.hunNumber << " Value: " << rhs.get_hs_val() << std::endl;
+    os << "Accountancies: " << C::accNumber << " Value: " << rhs.get_acc_val() << std::endl;
+    os << "Hunting shops: " << C::hunNumber << " Value: " << rhs.get_hs_val() << std::endl;
     os << "Exchange offices: " << C::excNumber << " Value: " << rhs.get_exo_val() << std::endl;
 
     return os;
@@ -402,7 +406,7 @@ std::ostream& operator<< (std::ostream& os, const Group<C>& rhs)
 
 template<class C>
 Group<typename additive_expand_comp<C>::type> const
-additive_expand_group(Group<C> const &s1);
+additive_expand_group(Group<C> const &s1)
 {
     return Group<typename additive_expand_comp<C>::type>(s1);
 }
@@ -412,7 +416,7 @@ additive_expand_group(Group<C> const &s1);
 
 template<class C>
 Group<typename multiply_comp<C, 10>::type> const
-multiplicative_expand_group(Group<C> const &s1);
+multiplicative_expand_group(Group<C> const &s1)
 {
     return Group<typename multiply_comp<C, 10>::type>(s1);
 }
@@ -422,7 +426,7 @@ multiplicative_expand_group(Group<C> const &s1);
 
 template<class C>
 Group<typename additive_rollup_comp<C>::type> const
-additive_rollup_group(Group<C> const &s1);
+additive_rollup_group(Group<C> const &s1)
 {
     return Group<typename additive_rollup_comp<C>::type>(s1);
 }
