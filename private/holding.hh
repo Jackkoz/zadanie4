@@ -24,7 +24,6 @@ typedef Company<0, 0, 1> Exchange_office;
 template<class C1, class C2>
 struct add_comp
 {
-public:
     typedef Company<C1::accNumber + C2::accNumber,
                     C1::hunNumber + C2::hunNumber,
                     C1::excNumber + C2::excNumber> type;
@@ -37,7 +36,6 @@ public:
 template<class C1, class C2>
 struct remove_comp
 {
-public:
     typedef Company<(C1::accNumber - C2::accNumber >= 1 ? C1::accNumber - C2::accNumber : 0),
                     (C1::hunNumber - C2::hunNumber >= 1 ? C1::hunNumber - C2::hunNumber : 0),
                     (C1::excNumber - C2::excNumber >= 1 ? C1::excNumber - C2::excNumber : 0)> type;
@@ -52,7 +50,6 @@ public:
 template<class C, unsigned int n>
 struct multiply_comp
 {
-public:
     typedef Company<C::accNumber * n, C::hunNumber * n, C::excNumber * n> type;
 
 };
@@ -66,7 +63,6 @@ public:
 template<class C, unsigned int n>
 struct split_comp
 {
-public:
     typedef Company<n >= 1 ? C::accNumber / n : 0,
                     n >= 1 ? C::hunNumber / n : 0,
                     n >= 1 ? C::excNumber / n : 0> type;
@@ -81,7 +77,6 @@ public:
 template<class C>
 struct additive_expand_comp
 {
-public:
     typedef Company<C::accNumber + 1, C::hunNumber + 1, C::excNumber + 1> type;
 };
 
@@ -93,7 +88,6 @@ public:
 template<class C>
 struct additive_rollup_comp
 {
-public:
     typedef Company<C::accNumber >= 1 ? C::accNumber - 1 : 0,
                     C::hunNumber >= 1 ? C::hunNumber - 1 : 0,
                     C::excNumber >= 1 ? C::excNumber - 1 : 0> type;
