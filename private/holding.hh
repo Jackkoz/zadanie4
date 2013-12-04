@@ -4,6 +4,16 @@
 #include <stddef.h>
 #include <iostream>
 
+constexpr inline unsigned int subtract(unsigned int A, unsigned int B)
+{
+    return (A > B) ? A - B : 0;
+}
+
+constexpr inline unsigned int divide(unsigned int A, unsigned int B)
+{
+    return (B > 0) ? A / B : 0;
+}
+
 template <unsigned int A, unsigned int H, unsigned int E>
 class Company
 {
@@ -36,9 +46,9 @@ struct add_comp
 template<class C1, class C2>
 struct remove_comp
 {
-    typedef Company<(C1::accNumber - C2::accNumber >= 1 ? C1::accNumber - C2::accNumber : 0),
-                    (C1::hunNumber - C2::hunNumber >= 1 ? C1::hunNumber - C2::hunNumber : 0),
-                    (C1::excNumber - C2::excNumber >= 1 ? C1::excNumber - C2::excNumber : 0)> type;
+    typedef Company<subtract(C1::accNumber, C2::accNumber),
+                    subtract(C1::hunNumber, C2::hunNumber),
+                    subtract(C1::excNumber, C2::excNumber)> type;
 
 };
 
@@ -63,9 +73,9 @@ struct multiply_comp
 template<class C, unsigned int n>
 struct split_comp
 {
-    typedef Company<n >= 1 ? C::accNumber / n : 0,
-                    n >= 1 ? C::hunNumber / n : 0,
-                    n >= 1 ? C::excNumber / n : 0> type;
+    typedef Company<divide(C::accNumber, n),
+                    divide(C::hunNumber, n),
+                    divide(C::excNumber, n)> type;
 
 };
 
@@ -88,9 +98,9 @@ struct additive_expand_comp
 template<class C>
 struct additive_rollup_comp
 {
-    typedef Company<C::accNumber >= 1 ? C::accNumber - 1 : 0,
-                    C::hunNumber >= 1 ? C::hunNumber - 1 : 0,
-                    C::excNumber >= 1 ? C::excNumber - 1 : 0> type;
+    typedef Company<subtract(C::accNumber, 1),
+                    subtract(C::hunNumber, 1),
+                    subtract(C::excNumber, 1)> type;
 };
 
 
