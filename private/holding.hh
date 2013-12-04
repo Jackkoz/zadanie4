@@ -237,23 +237,9 @@ public:
     Group<C>& operator-= (const Group<C>& rhs)
     {
         unsigned int new_size = subtract(size, rhs.size);
-        if (new_size == 0) {
-            accValue = 0;
-            hunValue = 0;
-            excValue = 0;
-        } else {
-            unsigned int lhs_acc_worth = size * accValue;
-            unsigned int rhs_acc_worth = rhs.size * rhs.accValue;
-            accValue = subtract(size * accValue, rhs.size * rhs.accValue) / new_size;
-
-            unsigned int lhs_hun_worth = size * hunValue;
-            unsigned int rhs_hun_worth = rhs.size * rhs.hunValue;
-            hunValue = subtract(size * hunValue, rhs.size * rhs.hunValue) / new_size;
-
-            unsigned int lhs_exc_worth = size * excValue;
-            unsigned int rhs_exc_worth = rhs.size * rhs.excValue;
-            excValue = subtract(size * excValue, rhs.size * rhs.excValue) / new_size;
-        }
+        accValue = divide(subtract(size * accValue, rhs.size * rhs.accValue), new_size);
+        hunValue = divide(subtract(size * hunValue, rhs.size * rhs.hunValue), new_size);
+        excValue = divide(subtract(size * excValue, rhs.size * rhs.excValue), new_size);
         size = new_size;
 
         return *this;
