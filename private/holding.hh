@@ -247,7 +247,7 @@ public:
             accValue = lhs_acc_worth > rhs_acc_worth ?
                       (lhs_acc_worth - rhs_acc_worth) / new_size : 0;
 
-            unsigned int lhs_hun_worth = size * lhs_hun_worth;
+            unsigned int lhs_hun_worth = size * hunValue;
             unsigned int rhs_hun_worth = rhs.size * rhs.hunValue;
             hunValue = lhs_hun_worth > rhs_hun_worth ?
                       (lhs_hun_worth - rhs_hun_worth) / new_size : 0;
