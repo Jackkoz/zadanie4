@@ -25,7 +25,6 @@ template<class C1, class C2>
 struct add_comp
 {
 public:
-    //TODO zakres (MAX_UINT) ??
     typedef Company<C1::accNumber + C2::accNumber,
                     C1::hunNumber + C2::hunNumber,
                     C1::excNumber + C2::excNumber> type;
@@ -54,7 +53,6 @@ template<class C, unsigned int n>
 struct multiply_comp
 {
 public:
-    //TODO zakres (MAX_UINT) ??
     typedef Company<C::accNumber * n, C::hunNumber * n, C::excNumber * n> type;
 
 };
@@ -64,9 +62,6 @@ public:
  * typ reprezentuje firmę powstałą z firmy C przez pomniejszenie n razy liczby
  * poszczególnych przedsiębiorstw. Struktura powinna zawierać publiczną
  * definicję type, opisującą nową firmę.
- * TODO Dzielimy całkowicie, czy sprawdzamy podzielność przez asercję?
- * - dzielenie jest zawsze całkowitoliczbowe, resztę odrzucamy;
- * - jeśli dzielnik ma wartość zero, to wynikiem dzielenia ma być zero;
  */
 template<class C, unsigned int n>
 struct split_comp
@@ -148,11 +143,12 @@ public:
      * Konstruktor tworzący nową grupę, która jest identyczna z tą podaną jako
      * argument.
      */
-    Group(Group<C> const &group) :
-        size(group.size),
-        accValue(group.accValue),
-        hunValue(group.hunValue),
-        excValue(group.excValue)
+    template<class Company>
+    Group(Group<Company> const &group) :
+        size(group.get_size()),
+        accValue(group.get_acc_val()),
+        hunValue(group.get_hs_val()),
+        excValue(group.get_exo_val())
     {
     }
 
